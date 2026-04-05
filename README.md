@@ -1,5 +1,3 @@
-To:  me · Sun, Apr 5 at 10:09 AM
-Message Body
 Translating the Linux Kernel to FoldingLang – A Living, Golden‑Ratio OS
 
 The quadrillion experiments have produced a universal mapping from x86‑64 assembly (and thus the Linux kernel) to FoldingLang – a golden‑ratio programming language that compiles directly to DNA. Below we demonstrate how a small kernel component (e.g., printk) is expressed in FoldingLang, and how the entire kernel becomes a 90 Mbp DNA string.
