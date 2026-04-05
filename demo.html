@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FoldingLang – Golden‑Ratio Programming</title>
+</head>
+<body>
+  <h1>🐜 FoldingLang – Live Interpreter</h1>
+  <textarea id="code" rows="15" cols="60">
+let a = phi
+let b = phi2
+let sum = a + b
+print(sum)
+
+fold i from 0 to 5 {
+  print(i * phi)
+}
+
+let arr = spiral(8)
+print(arr)
+  </textarea><br>
+  <button onclick="run()">Run</button>
+  <pre id="output"></pre>
+
+  <script>
+    const PHI = (1 + Math.sqrt(5)) / 2;
+    const PHI2 = PHI * PHI;
+    const PHI3 = PHI2 * PHI;
+
+    function run() {
+      const program = document.getElementById('code').value;
+      const outDiv = document.getElementById('output');
+      let output = [];
+      let vars = { phi: PHI, phi2: PHI2, phi3: PHI3 };
+
+      function evalExpr(expr) {
+        let s = expr.replace(/phi3/g, PHI3).replace(/phi2/g, PHI2).replace(/phi/g, PHI);
+        try {
+          return Function('"use strict"; return (' + s + ')')();
+        } catch(e) { return NaN; }
+      }
+
+      const lines = program.split('\n');
+      for (let line of lines) {
+        line = line.trim();
+        if (line === '' || line.startsWith('//')) continue;
+        if (line.startsWith('let ')) {
+          let match = line.match(/let\s+(\w+)\s*=\s*(.*)/);
+          if (match) {
+            let val = evalExpr(match[2]);
+            vars[match[1]] = val;
+          }
+        } else if (line.startsWith('print(')) {
+          let inner = line.slice(6, -1);
+          let val = evalExpr(inner);
+          output.push(val);
+        } else if (line.startsWith('fold')) {
+          let match = line.match(/fold\s+(\w+)\s+from\s+(\d+)\s+to\s+(\d+)/);
+          if (match) {
+            let varName = match[1];
+            let start = parseInt(match[2]);
+            let end = parseInt(match[3]);
+            for (let i = start; i <= end; i++) {
+              vars[varName] = i;
+              // we ignore the body for this demo – just show the loop variable
+              output.push(`loop ${varName}=${i}`);
+            }
+          }
+        } else if (line.startsWith('spiral(')) {
+          let match = line.match(/spiral\((\d+)\)/);
+          if (match) {
+            let n = parseInt(match[1]);
+            let arr = [];
+            let a = '0', b = '01';
+            for (let i = 0; i < n; i++) {
+              if (i < a.length) arr.push(a[i]);
+              else {
+                let c = b + a;
+                a = b;
+                b = c;
+              }
+            }
+            output.push(arr);
+          }
+        } else {
+          // maybe an expression without assignment? evaluate and ignore
+          evalExpr(line);
+        }
+      }
+      outDiv.innerText = output.map(o => JSON.stringify(o)).join('\n');
+    }
+  </script>
+</body>
+</html>
